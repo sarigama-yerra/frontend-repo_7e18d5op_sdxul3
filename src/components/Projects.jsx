@@ -1,100 +1,55 @@
-import { useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink } from 'lucide-react';
+import { useState } from 'react';
 
-const allProjects = [
-  {
-    title: 'Realtime Chat App',
-    type: 'Web Apps',
-    desc: 'A real-time chat app built with React & Firebase — lightning fast and scalable.',
-    tags: ['React', 'Firebase', 'WebSocket'],
-    href: '#'
-  },
-  {
-    title: 'E-commerce API',
-    type: 'APIs',
-    desc: 'Robust REST API powering seamless e-commerce experiences.',
-    tags: ['Node', 'Express', 'MongoDB'],
-    href: '#'
-  },
-  {
-    title: 'Open Source CLI',
-    type: 'Open Source',
-    desc: 'Developer-friendly CLI to scaffold full-stack projects in seconds.',
-    tags: ['Node', 'Open Source'],
-    href: '#'
-  },
-  {
-    title: 'Analytics Dashboard',
-    type: 'Web Apps',
-    desc: 'Interactive dashboards with charts and real-time KPIs.',
-    tags: ['React', 'D3', 'Tailwind'],
-    href: '#'
-  },
+const ALL = 'All';
+
+const initial = [
+  { id: 1, title: 'Realtime Dashboard', tags: ['React', 'Websocket'], img: 'https://images.unsplash.com/photo-1551281044-8a6b5be0db3d?q=80&w=1200&auto=format&fit=crop' },
+  { id: 2, title: 'Ecommerce Platform', tags: ['Node', 'Stripe'], img: 'https://images.unsplash.com/photo-1515165562835-c3b8c2e332bb?q=80&w=1200&auto=format&fit=crop' },
+  { id: 3, title: 'Portfolio Engine', tags: ['Next.js', 'SEO'], img: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=1200&auto=format&fit=crop' },
+  { id: 4, title: 'AI Content Tool', tags: ['FastAPI', 'OpenAI'], img: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop' },
 ];
 
-const filters = ['All', 'Web Apps', 'APIs', 'Open Source'];
+const tagSet = [ALL, ...Array.from(new Set(initial.flatMap(p => p.tags)))];
 
 export default function Projects() {
-  const [active, setActive] = useState('All');
-  const filtered = useMemo(() => {
-    if (active === 'All') return allProjects;
-    return allProjects.filter((p) => p.type === active);
-  }, [active]);
+  const [active, setActive] = useState(ALL);
+
+  const list = active === ALL ? initial : initial.filter(p => p.tags.includes(active));
 
   return (
-    <section id="projects" className="w-full bg-slate-950 py-20">
-      <div className="mx-auto max-w-7xl px-4">
-        <div className="mb-10 flex flex-wrap items-center justify-between gap-4">
-          <h2 className="text-3xl font-semibold text-white md:text-4xl">
-            Projects That Speak Louder Than Words
-          </h2>
+    <section id="projects" className="py-20 bg-slate-950">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white">Selected Projects</h2>
           <div className="flex flex-wrap gap-2">
-            {filters.map((f) => (
+            {tagSet.map(tag => (
               <button
-                key={f}
-                onClick={() => setActive(f)}
-                className={`rounded-full border px-4 py-2 text-sm transition ${
-                  active === f
-                    ? 'border-sky-400 bg-sky-500/10 text-sky-300'
-                    : 'border-slate-700 text-slate-300 hover:border-slate-600'
-                }`}
+                key={tag}
+                onClick={() => setActive(tag)}
+                className={`px-3 py-1.5 rounded-md text-sm border ${active === tag ? 'bg-sky-500 text-white border-sky-400' : 'text-slate-300 border-white/10 hover:bg-white/5'}`}
               >
-                {f}
+                {tag}
               </button>
             ))}
           </div>
         </div>
 
-        <div className="columns-1 gap-4 sm:columns-2 lg:columns-3">
-          <AnimatePresence>
-            {filtered.map((p) => (
-              <motion.a
-                key={p.title}
-                href={p.href}
-                target="_blank"
-                rel="noreferrer"
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="mb-4 block break-inside-avoid rounded-2xl border border-slate-800 bg-slate-900/40 p-5 shadow-md transition hover:border-sky-500/40 hover:shadow-sky-500/10"
-              >
-                <div className="mb-3 flex items-center justify-between">
-                  <h3 className="text-lg font-medium text-white">{p.title}</h3>
-                  <ExternalLink className="h-4 w-4 text-slate-400" />
-                </div>
-                <p className="text-sm text-slate-300">{p.desc}</p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {p.tags.map((t) => (
-                    <span key={t} className="rounded-full bg-slate-800/80 px-3 py-1 text-xs text-slate-300">
-                      {t}
-                    </span>
+        <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {list.map(card => (
+            <article key={card.id} className="group rounded-xl overflow-hidden border border-white/10 bg-slate-900/40">
+              <div className="aspect-video overflow-hidden">
+                <img src={card.img} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+              </div>
+              <div className="p-4">
+                <h3 className="text-white font-semibold">{card.title}</h3>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {card.tags.map(t => (
+                    <span key={t} className="text-xs px-2 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">{t}</span>
                   ))}
                 </div>
-              </motion.a>
-            ))}
-          </AnimatePresence>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>
